@@ -1,14 +1,16 @@
-from flask import Flask
+from flask import Flask, app
+import socketio
 from flask_cors import CORS
 
-name = 'TestServer'
+flaskApp = Flask('TestApp')
+cors = CORS(flaskApp)
+socketServer = socketio.Server()
 
-app = Flask(name)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+myApp = socketio.WSGIApp(socketServer, flaskApp)
 
-@app.route('/user')
+@flaskApp.route('/')
 def index():
-    return { 'nickname': 'Nikita' }
+    return 'Hello world!'
 
-app.run(debug=True)
+flaskApp.run(debug=True, port=5500)
+myApp.run()
