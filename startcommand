@@ -1,0 +1,1 @@
+uvicorn WebGameServer_dev.main:app --port 3000
