@@ -1,25 +1,43 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-import pymongo
-import json
+from pydantic import BaseModel
+import DBcontroller
 
 app = FastAPI()
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-db = myclient["webgame"]
-collection = db["users"]
+databaseController = DBcontroller.db_controller()
 
 app.mount(
     "/assets",
-    StaticFiles(directory="fastApiPy/assets"),
+    StaticFiles(directory="assets"),
     name="assets"
 )
 
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+
 @app.get("/")
-def get_hello():
-    return FileResponse("fastApiPy/index.html")
+def home_page():
+    return FileResponse("index.html")
 
 @app.post("/api/v1/users/login")
 def read_root():
-    return {collection.find_one()['name']}
+    return { '1': 1 }
+
+@app.post("/api/v1/users/signup")
+def signup(user: User):
+    buf = dict(user)
+    databaseController.write("users", buf)
+    return {
+        "status" : "success",
+        "data": {
+            "user":
+            {
+                "user": "123",
+                "email": "123",
+                "pass": "123"
+                }
+        }
+        }
