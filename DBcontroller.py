@@ -12,11 +12,9 @@ class db_controller:
 
     def write(self, collectionName, data):
         collection = self.db[collectionName]
-        return collection.insert_one(data)
+        return collection.insert_one(data).inserted_id
     
     def read(self, collectionName, id = None):
         collection = self.db[collectionName]
-        bufList = []
-        for item in collection.find():
-            bufList.append(item)
-        return bufList
+        collection.find_one({"_id": id})
+        return collection.find_one({"_id": id})

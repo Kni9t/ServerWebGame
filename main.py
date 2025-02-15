@@ -1,43 +1,42 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+
+import Models
 import DBcontroller
+import JSend
 
 app = FastAPI()
 databaseController = DBcontroller.db_controller()
 
 app.mount(
-    "/assets",
-    StaticFiles(directory="assets"),
+    "/web/assets",
+    StaticFiles(directory="web/assets"),
     name="assets"
 )
 
-class User(BaseModel):
-    name: str
-    email: str
-    password: str
-
 @app.get("/")
 def home_page():
-    return FileResponse("index.html")
+    return FileResponse("web/index.html")
 
 @app.post("/api/v1/users/login")
 def read_root():
     return { '1': 1 }
 
 @app.post("/api/v1/users/signup")
-def signup(user: User):
-    buf = dict(user)
-    databaseController.write("users", buf)
-    return {
-        "status" : "success",
-        "data": {
-            "user":
-            {
-                "user": "123",
-                "email": "123",
-                "pass": "123"
-                }
-        }
-        }
+def signup(user: Models.UserReg):
+    response = {}
+    try:
+        newUser = dict(user)
+
+        insertID = databaseController.write("users", newUser)
+        receivedUser = databaseController.read("users", insertID)
+        receivedUser["_id"] = str(receivedUser["_id"])
+
+        print(receivedUser)
+
+        response = JSend.CreateJSend("success", "user", receivedUser)
+    except:
+        print ("Error")
+    
+    return response
