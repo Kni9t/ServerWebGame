@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+import uvicorn
 
 import Models
 import DBcontroller
@@ -32,11 +33,14 @@ def signup(user: Models.UserReg):
         insertID = databaseController.write("users", newUser)
         receivedUser = databaseController.read("users", insertID)
         receivedUser["_id"] = str(receivedUser["_id"])
-
         print(receivedUser)
 
         response = JSend.CreateJSend("success", "user", receivedUser)
-    except:
-        print ("Error")
+    except Exception as e:
+        response = JSend.CreateJSend("error", "user", dict(user), e)
     
     return response
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="192.168.1.2", port=3000)
