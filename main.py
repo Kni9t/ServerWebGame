@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
@@ -8,17 +7,8 @@ import DBcontroller
 import JSend
 
 app = FastAPI()
+
 databaseController = DBcontroller.db_controller()
-
-app.mount(
-    "/web/assets",
-    StaticFiles(directory="web/assets"),
-    name="assets"
-)
-
-@app.get("/")
-def home_page():
-    return FileResponse("web/index.html")
 
 @app.post("/api/v1/users/login")
 def read_root():
@@ -30,6 +20,8 @@ def signup(user: Models.UserReg):
     try:
         newUser = dict(user)
 
+        # email, name, pass, passwordConfirm
+        
         insertID = databaseController.write("users", newUser)
         receivedUser = databaseController.read("users", insertID)
         receivedUser["_id"] = str(receivedUser["_id"])
@@ -41,6 +33,7 @@ def signup(user: Models.UserReg):
     
     return response
 
+app.mount("/", StaticFiles(directory="web", html = True))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.1.2", port=3000)
