@@ -33,9 +33,15 @@ def signup(receivedUser: Models.UserReg):
     response = {}
     try:
         newUser = dict(receivedUser)
-
-        # email, name, pass, passwordConfirm
         
+        # email, name, pass, passwordConfirm validation
+        
+        if (databaseController.find("users", "email", newUser["email"]) != None):
+            return JSend.CreateJSend("fail", "signup", { "email" : "This email is already taken" })
+
+        if (newUser["password"] != newUser["passwordConfirm"]):
+            return JSend.CreateJSend("fail", "signup", { "password" : "Passwords don't match" })
+                
         insertID = databaseController.write("users", newUser)
         gettingUser = databaseController.find("users", "_id", insertID)
         gettingUser["_id"] = str(gettingUser["_id"])
