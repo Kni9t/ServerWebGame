@@ -41,6 +41,8 @@ def signup(receivedUser: Models.UserReg):
 
         if (newUser["password"] != newUser["passwordConfirm"]):
             return JSend.CreateJSend("fail", { "password" : "Passwords don't match" })
+        
+        del newUser["passwordConfirm"]
                 
         insertID = databaseController.write("users", newUser)
         gettingUser = databaseController.find("users", "_id", insertID)
