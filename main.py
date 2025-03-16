@@ -11,7 +11,7 @@ app = FastAPI()
 databaseController = DBcontroller.db_controller()
 
 @app.post("/api/v1/users/login")
-def read_root():
+def checkLogin():
     return { '1': 1 }
 
 @app.post("/api/v1/users/signup")
@@ -23,7 +23,7 @@ def signup(user: Models.UserReg):
         # email, name, pass, passwordConfirm
         
         insertID = databaseController.write("users", newUser)
-        receivedUser = databaseController.read("users", insertID)
+        receivedUser = databaseController.find("users", "_id", insertID)
         receivedUser["_id"] = str(receivedUser["_id"])
         print(receivedUser)
 

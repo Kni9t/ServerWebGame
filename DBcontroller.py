@@ -14,7 +14,6 @@ class db_controller:
         collection = self.db[collectionName]
         return collection.insert_one(data).inserted_id
     
-    def read(self, collectionName, id = None):
+    def find(self, collectionName, field, date):
         collection = self.db[collectionName]
-        collection.find_one({"_id": id})
-        return collection.find_one({"_id": id})
+        return collection.find_one({field: date})
