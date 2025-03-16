@@ -29,21 +29,21 @@ def checkLogin(receivedUser: Models.UserLog):
     return response
 
 @app.post("/api/v1/users/signup")
-def signup(user: Models.UserReg):
+def signup(receivedUser: Models.UserReg):
     response = {}
     try:
-        newUser = dict(user)
+        newUser = dict(receivedUser)
 
         # email, name, pass, passwordConfirm
         
         insertID = databaseController.write("users", newUser)
-        receivedUser = databaseController.find("users", "_id", insertID)
-        receivedUser["_id"] = str(receivedUser["_id"])
-        print(receivedUser)
+        gettingUser = databaseController.find("users", "_id", insertID)
+        gettingUser["_id"] = str(gettingUser["_id"])
+        print(gettingUser)
 
-        response = JSend.CreateJSend("success", "user", receivedUser)
+        response = JSend.CreateJSend("success", "signup", gettingUser)
     except Exception as e:
-        response = JSend.CreateJSend("error", "user", dict(user), e)
+        response = JSend.CreateJSend("error", "signup", dict(receivedUser), e)
     
     return response
 
