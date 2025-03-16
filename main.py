@@ -22,9 +22,9 @@ def checkLogin(receivedUser: Models.UserLog):
         if (user["password"] == receivedUser["password"]):
             response = JSend.CreateJSend("success", "login", user)
         else:
-            response = JSend.CreateJSend("error", "login", receivedUser, "Invalid password")
+            response = JSend.CreateJSend("fail", "login", { "password" : "Invalid password" })
     else:
-        response = JSend.CreateJSend("error", "login", receivedUser, "User not found in database")
+        response = JSend.CreateJSend("fail", "login", { "email" : "User not found in database" })
     
     return response
 
