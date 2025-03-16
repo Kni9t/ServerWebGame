@@ -11,8 +11,22 @@ app = FastAPI()
 databaseController = DBcontroller.db_controller()
 
 @app.post("/api/v1/users/login")
-def checkLogin():
-    return { '1': 1 }
+def checkLogin(receivedUser: Models.UserLog):
+    receivedUser = dict(receivedUser)
+    response = {}
+    
+    user = databaseController.find("users", "email", receivedUser["email"])
+    if (user != None):
+        user["_id"] = str(user["_id"])
+        
+        if (user["password"] == receivedUser["password"]):
+            response = JSend.CreateJSend("success", "login", user)
+        else:
+            response = JSend.CreateJSend("error", "login", receivedUser, "Invalid password")
+    else:
+        response = JSend.CreateJSend("error", "login", receivedUser, "User not found in database")
+    
+    return response
 
 @app.post("/api/v1/users/signup")
 def signup(user: Models.UserReg):
