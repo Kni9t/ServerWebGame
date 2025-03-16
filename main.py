@@ -20,11 +20,11 @@ def checkLogin(receivedUser: Models.UserLog):
         user["_id"] = str(user["_id"])
         
         if (user["password"] == receivedUser["password"]):
-            response = JSend.CreateJSend("success", "login", user)
+            response = JSend.CreateJSend("success", user)
         else:
-            response = JSend.CreateJSend("fail", "login", { "password" : "Invalid password" })
+            response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
     else:
-        response = JSend.CreateJSend("fail", "login", { "email" : "User not found in database" })
+        response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
     
     return response
 
@@ -37,19 +37,19 @@ def signup(receivedUser: Models.UserReg):
         # email, name, pass, passwordConfirm validation
         
         if (databaseController.find("users", "email", newUser["email"]) != None):
-            return JSend.CreateJSend("fail", "signup", { "email" : "This email is already taken" })
+            return JSend.CreateJSend("fail", { "email" : "This email is already taken" })
 
         if (newUser["password"] != newUser["passwordConfirm"]):
-            return JSend.CreateJSend("fail", "signup", { "password" : "Passwords don't match" })
+            return JSend.CreateJSend("fail", { "password" : "Passwords don't match" })
                 
         insertID = databaseController.write("users", newUser)
         gettingUser = databaseController.find("users", "_id", insertID)
         gettingUser["_id"] = str(gettingUser["_id"])
         print(gettingUser)
 
-        response = JSend.CreateJSend("success", "signup", gettingUser)
+        response = JSend.CreateJSend("success", gettingUser)
     except Exception as e:
-        response = JSend.CreateJSend("error", "signup", dict(receivedUser), e)
+        response = JSend.CreateJSend("error", dict(receivedUser), e)
     
     return response
 

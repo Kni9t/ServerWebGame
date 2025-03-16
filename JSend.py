@@ -1,18 +1,14 @@
-def CreateJSend(status, name, data = None, err = None):
+def CreateJSend(status, data, err = None):
 
     if status != "error":
         response = {
-        "status" : status
+        "status" : status,
+        "data" : data
         }
     else:
         response = {
         "status" : status,
         "message" : err
-        }
-        
-    if (data is not None):
-        response["data"] = {
-            name: data
         }
 
     return response
