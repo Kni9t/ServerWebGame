@@ -1,4 +1,4 @@
-def CreateJSend(status, data = None, err = None):
+def CreateJSend(status, data = None, msg = None):
 
     if status != "error":
         response = {
@@ -8,7 +8,7 @@ def CreateJSend(status, data = None, err = None):
     else:
         response = {
         "status" : status,
-        "message" : err
+        "message" : msg
         }
 
     return response
