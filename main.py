@@ -1,10 +1,14 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-import uvicorn
+from starlette.exceptions import HTTPException as StarletteHTTPException
+import uvicorn, requests
 
 import Models
 import DBcontroller
 import JSend
+
+#return JSONResponse(status_code=422, content={"111": "item"})
 
 app = FastAPI()
 
@@ -31,6 +35,7 @@ def checkLogin(receivedUser: Models.UserLog):
 @app.post("/api/v1/users/signup")
 def signup(receivedUser: Models.UserReg):
     response = {}
+    
     try:
         newUser = dict(receivedUser)
         
@@ -56,6 +61,25 @@ def signup(receivedUser: Models.UserReg):
     return response
 
 app.mount("/", StaticFiles(directory="web", html = True))
+
+@app.exception_handler(StarletteHTTPException)
+def custom_http_exception_handler(request: requests, exc: StarletteHTTPException):    
+    match exc.status_code:
+        case 404:
+            return JSONResponse(
+             status_code = 404,
+             content = JSend.CreateJSend("error", msg = "Page not found")
+             )
+        case 405:
+            return JSONResponse(
+             status_code = 405,
+             content = JSend.CreateJSend("error", msg = "Method not allowed")
+             )
+        case _:
+            return JSONResponse(
+            status_code = exc.status_code,
+            content = JSend.CreateJSend("error", msg = "Unsuspected error")
+            )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.1.2", port=3000)
