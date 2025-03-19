@@ -38,10 +38,10 @@ def signup(receivedUser: Models.UserReg):
         # email, name, pass, passwordConfirm validation
         
         if (databaseController.find("users", "email", newUser["email"]) != None):
-            return JSend.CreateJSend("fail", { "email" : "This email is already taken" })
+            return JSONResponse( status_code = 400, content = JSend.CreateJSend("fail", { "email" : "This email is already taken" }))
 
         if (newUser["password"] != newUser["passwordConfirm"]):
-            return JSend.CreateJSend("fail", { "password" : "Passwords don't match" })
+            return JSONResponse( status_code = 400, content = JSend.CreateJSend("fail", { "password" : "Passwords don't match" }))
         
         del newUser["passwordConfirm"]
                 
@@ -53,8 +53,9 @@ def signup(receivedUser: Models.UserReg):
         response = JSend.CreateJSend("success", gettingUser)
     except Exception as e:
         response = JSend.CreateJSend("error", dict(receivedUser), e)
+        return JSONResponse( status_code = 500, content = response)    
     
-    return response
+    return JSONResponse( status_code = 200, content = response) 
 
 app.mount("/", StaticFiles(directory="web", html = True))
 
