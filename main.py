@@ -63,20 +63,11 @@ app.mount("/", StaticFiles(directory="web", html = True))
 def custom_http_exception_handler(request: requests, exc: HTTPException):    
     match exc.status_code:
         case 404:
-            return JSONResponse(
-             status_code = 404,
-             content = JSend.CreateJSend("error", msg = "Page not found")
-             )
+            return JSONResponse(status_code = 404, content = JSend.CreateJSend("error", msg = "Page not found"))
         case 405:
-            return JSONResponse(
-             status_code = 405,
-             content = JSend.CreateJSend("error", msg = "Method not allowed")
-             )
-        # case _:
-        #     return JSONResponse(
-        #     status_code = exc.status_code,
-        #     content = JSend.CreateJSend("error", msg = "Unsuspected error")
-        #     )
+            return JSONResponse(status_code = 405, content = JSend.CreateJSend("error", msg = "Method not allowed"))
+        case _:
+            return JSONResponse(status_code = exc.status_code, content = JSend.CreateJSend("error", msg = "Unsuspected error"))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.1.2", port=3000)
