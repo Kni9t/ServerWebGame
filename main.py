@@ -1,14 +1,12 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.exceptions import HTTPException
 import uvicorn, requests
 
 import Models
 import DBcontroller
 import JSend
-
-#return JSONResponse(status_code=422, content={"111": "item"})
 
 app = FastAPI()
 
@@ -20,22 +18,20 @@ def checkLogin(receivedUser: Models.UserLog):
     response = {}
     
     user = databaseController.find("users", "email", receivedUser["email"])
+    
     if (user != None):
         user["_id"] = str(user["_id"])
         
         if (user["password"] == receivedUser["password"]):
             response = JSend.CreateJSend("success", user)
-        else:
-            response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
-    else:
-        response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
-    
-    return response
+            return JSONResponse( status_code = 200, content = response)
+        
+    response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
+    return JSONResponse( status_code = 401, content = response)
 
 @app.post("/api/v1/users/signup")
 def signup(receivedUser: Models.UserReg):
     response = {}
-    
     try:
         newUser = dict(receivedUser)
         
@@ -62,8 +58,8 @@ def signup(receivedUser: Models.UserReg):
 
 app.mount("/", StaticFiles(directory="web", html = True))
 
-@app.exception_handler(StarletteHTTPException)
-def custom_http_exception_handler(request: requests, exc: StarletteHTTPException):    
+@app.exception_handler(HTTPException)
+def custom_http_exception_handler(request: requests, exc: HTTPException):    
     match exc.status_code:
         case 404:
             return JSONResponse(
@@ -75,11 +71,11 @@ def custom_http_exception_handler(request: requests, exc: StarletteHTTPException
              status_code = 405,
              content = JSend.CreateJSend("error", msg = "Method not allowed")
              )
-        case _:
-            return JSONResponse(
-            status_code = exc.status_code,
-            content = JSend.CreateJSend("error", msg = "Unsuspected error")
-            )
+        # case _:
+        #     return JSONResponse(
+        #     status_code = exc.status_code,
+        #     content = JSend.CreateJSend("error", msg = "Unsuspected error")
+        #     )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="192.168.1.2", port=3000)
