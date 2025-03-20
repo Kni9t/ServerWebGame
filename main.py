@@ -10,7 +10,7 @@ import JSend
 
 app = FastAPI()
 
-databaseController = DBcontroller.db_controller()
+databaseController = DBcontroller.db_controller("mongodb://192.168.1.13:27017/")
 
 @app.post("/api/v1/users/login")
 def checkLogin(receivedUser: Models.UserLog):
