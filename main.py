@@ -70,4 +70,4 @@ def custom_http_exception_handler(request: requests, exc: HTTPException):
             return JSONResponse(status_code = exc.status_code, content = JSend.CreateJSend("error", msg = "Unsuspected error"))
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.1.2", port=3000)
+    uvicorn.run(app, host="localhost", port=3000)

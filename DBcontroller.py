@@ -1,14 +1,9 @@
 import pymongo
 
-DBNAME = "webgame"
-USERCOLLECTION = "users"
-
-#collection = db["users"]
-
 class db_controller:
-    def __init__(self, address = "mongodb://192.168.1.13:27017/"):
+    def __init__(self, address = "mongodb://192.168.1.13:27017/", dbname = "webgame"):
         self.client = pymongo.MongoClient(address)
-        self.db = self.client[DBNAME]
+        self.db = self.client[dbname]
 
     def write(self, collectionName, data):
         collection = self.db[collectionName]
