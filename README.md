@@ -1,4 +1,4 @@
-# v 0.1.2
+# v 0.1.4
 
 # Preparing for start
 To start the server, you must first install the python dependencies. To do this, run the following command in the project directory:

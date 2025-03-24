@@ -61,6 +61,22 @@ def signup(receivedUser: Models.UserReg):
     
     return JSONResponse( status_code = 200, content = response) 
 
+@app.get("/api/v1/users")
+def getAllUsers():
+    response = {}
+    
+    users = databaseController.find("users")
+    usersList = {}
+    
+    for user in users:
+        user["_id"] = str(user["_id"])
+        user["password"] = user["password"].decode()
+        usersList[user["_id"]] = user
+    
+    response = JSend.CreateJSend("success", usersList)
+    
+    return JSONResponse( status_code = 200, content = response) 
+
 app.mount("/", StaticFiles(directory="web", html = True))
 
 @app.exception_handler(HTTPException)
