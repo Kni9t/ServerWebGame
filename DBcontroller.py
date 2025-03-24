@@ -9,6 +9,10 @@ class db_controller:
         collection = self.db[collectionName]
         return collection.insert_one(data).inserted_id
     
-    def find(self, collectionName, field, date):
+    def find(self, collectionName, field = None, date = None):
         collection = self.db[collectionName]
-        return collection.find_one({field: date})
+        
+        if (field is None or date is None ):
+            return collection.find()
+        else:
+            return collection.find_one({field: date})
