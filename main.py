@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 import uvicorn, requests
+import bcrypt
 
 import Models
 import DBcontroller
@@ -22,7 +23,11 @@ def checkLogin(receivedUser: Models.UserLog):
     if (user != None):
         user["_id"] = str(user["_id"])
         
-        if (user["password"] == receivedUser["password"]):
+        print(receivedUser["password"])
+        print(user["password"])
+        
+        if (bcrypt.checkpw(receivedUser["password"].encode(), user["password"])):
+            user["password"] = user["password"].decode('utf-8') 
             response = JSend.CreateJSend("success", user)
             return JSONResponse( status_code = 200, content = response)
         
@@ -44,10 +49,13 @@ def signup(receivedUser: Models.UserReg):
             return JSONResponse( status_code = 400, content = JSend.CreateJSend("fail", { "password" : "Passwords don't match" }))
         
         del newUser["passwordConfirm"]
+        
+        newUser["password"] = bcrypt.hashpw(newUser["password"].encode(), bcrypt.gensalt())
                 
         insertID = databaseController.write("users", newUser)
         gettingUser = databaseController.find("users", "_id", insertID)
         gettingUser["_id"] = str(gettingUser["_id"])
+        gettingUser["password"] = gettingUser["password"].decode()
         print(gettingUser)
 
         response = JSend.CreateJSend("success", gettingUser)
