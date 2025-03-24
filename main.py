@@ -23,9 +23,6 @@ def checkLogin(receivedUser: Models.UserLog):
     if (user != None):
         user["_id"] = str(user["_id"])
         
-        print(receivedUser["password"])
-        print(user["password"])
-        
         if (bcrypt.checkpw(receivedUser["password"].encode(), user["password"])):
             user["password"] = user["password"].decode('utf-8') 
             response = JSend.CreateJSend("success", user)
@@ -56,7 +53,6 @@ def signup(receivedUser: Models.UserReg):
         gettingUser = databaseController.find("users", "_id", insertID)
         gettingUser["_id"] = str(gettingUser["_id"])
         gettingUser["password"] = gettingUser["password"].decode()
-        print(gettingUser)
 
         response = JSend.CreateJSend("success", gettingUser)
     except Exception as e:
