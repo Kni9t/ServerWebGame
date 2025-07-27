@@ -13,6 +13,9 @@ app = FastAPI()
 
 databaseController = DBController("mongodb://localhost:27017/")
 
+parametersDict = dict(databaseController.find('params')[0])
+del parametersDict['_id']
+
 @app.post("/api/v1/users/login")
 def checkLogin(receivedUser: Models.UserLog):
     receivedUser = dict(receivedUser)
