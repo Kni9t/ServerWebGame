@@ -6,12 +6,12 @@ import uvicorn, requests
 import bcrypt
 
 import Models
-import DBcontroller
+from db_controller import DBController
 import JSend
 
 app = FastAPI()
 
-databaseController = DBcontroller.db_controller("mongodb://192.168.1.13:27017/")
+databaseController = DBController("mongodb://localhost:27017/")
 
 @app.post("/api/v1/users/login")
 def checkLogin(receivedUser: Models.UserLog):
