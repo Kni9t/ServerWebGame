@@ -34,6 +34,10 @@ def checkLogin(receivedUser: Models.UserLog):
             user['exp'] = str((datetime.now() + timedelta(days = 90)).strftime('%Y-%m-%d_%H:%M:%S'))
             
             token = jwt.encode(user, parametersDict['secret_key'], algorithm='HS256')
+            databaseController.write("bearer_list", {
+                'token': token, 
+                'user_id': databaseController.find("users", "email", receivedUser["email"])["_id"], 
+                'exp_time': user['exp']})
             
             response = JSend.CreateJSend("success", user)
             return JSONResponse(headers = {'Authorization': f'Bearer {token}'},status_code = 200, content = response)
