@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 import uvicorn, requests
 import bcrypt
+import jwt
+from datetime import datetime, timedelta
 
 import Models
 from db_controller import DBController
@@ -27,9 +29,14 @@ def checkLogin(receivedUser: Models.UserLog):
         user["_id"] = str(user["_id"])
         
         if (bcrypt.checkpw(receivedUser["password"].encode(), user["password"])):
-            user["password"] = user["password"].decode('utf-8') 
+            user["password"] = user["password"].decode('utf-8')
+            
+            user['exp'] = str((datetime.now() + timedelta(days = 90)).strftime('%Y-%m-%d_%H:%M:%S'))
+            
+            token = jwt.encode(user, parametersDict['secret_key'], algorithm='HS256')
+            
             response = JSend.CreateJSend("success", user)
-            return JSONResponse( status_code = 200, content = response)
+            return JSONResponse(headers = {'Authorization': f'Bearer {token}'},status_code = 200, content = response)
         
     response = JSend.CreateJSend("fail", { "message" : "Invalid email or password" })
     return JSONResponse( status_code = 401, content = response)
