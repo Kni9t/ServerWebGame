@@ -31,13 +31,12 @@ def checkLogin(receivedUser: Models.UserLog):
         if (bcrypt.checkpw(receivedUser["password"].encode(), user["password"])):
             user["password"] = user["password"].decode('utf-8')
             
-            user['exp'] = str((datetime.now() + timedelta(days = 90)).strftime('%Y-%m-%d_%H:%M:%S'))
+            payload = {
+                "id": str(user["_id"]),
+                "exp": int((datetime.now() + timedelta(days = 90)).timestamp())
+            }
             
-            token = jwt.encode(user, parametersDict['secret_key'], algorithm='HS256')
-            databaseController.write("bearer_list", {
-                'token': token, 
-                'user_id': databaseController.find("users", "email", receivedUser["email"])["_id"], 
-                'exp_time': user['exp']})
+            token = jwt.encode(payload, parametersDict['secret_key'], algorithm='HS256')
             
             response = JSend.CreateJSend("success", user)
             return JSONResponse(headers = {'Authorization': f'Bearer {token}'},status_code = 200, content = response)
